@@ -1,0 +1,55 @@
+package com.angelinux.citasapi;
+
+
+import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
+import com.angelinux.citasapi.dto.AppointmentDTO;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.boot.test.json.JacksonTester;
+
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@JsonTest
+class AppointmentJsonTest {
+
+    @Autowired
+    private JacksonTester<AppointmentDTO> jsonTesterResponse;
+
+    @Autowired
+    private JacksonTester<CreateAppointmentRequestDTO> jsonTesterRequest;
+
+    @Test
+    void AppointmentResponseSerializationTest() throws IOException {
+        AppointmentDTO newAppointment = new AppointmentDTO(99L, "Angel", "Motta", "42685123", 1);
+
+        assertThat(jsonTesterResponse.write(newAppointment)).isStrictlyEqualToJson("appointmentSingle.json");
+
+        assertThat(jsonTesterResponse.write(newAppointment)).hasJsonPathNumberValue("@.id");
+        assertThat(jsonTesterResponse.write(newAppointment)).extractingJsonPathNumberValue("@.id").isEqualTo(99);
+
+        assertThat(jsonTesterResponse.write(newAppointment)).hasJsonPathStringValue("@.firstName");
+        assertThat(jsonTesterResponse.write(newAppointment)).extractingJsonPathStringValue("@.firstName").isEqualTo("Angel");
+
+        assertThat(jsonTesterResponse.write(newAppointment)).hasJsonPathStringValue("@.lastName");
+        assertThat(jsonTesterResponse.write(newAppointment)).extractingJsonPathStringValue("@.lastName").isEqualTo("Motta");
+
+        assertThat(jsonTesterResponse.write(newAppointment)).hasJsonPathNumberValue("@.specialty");
+        assertThat(jsonTesterResponse.write(newAppointment)).extractingJsonPathNumberValue("@.specialty").isEqualTo(1);
+    }
+
+    @Test
+    void CreatAppointmentRequestDeserialization() throws IOException {
+        String createAppointmentRequest = """
+                {
+                    "firstName": "Angel",
+                    "lastName": "Motta",
+                    "dni": "42685123",
+                    "specialty": 1
+                }
+                """;
+        assertThat(jsonTesterRequest.parse(createAppointmentRequest)).isEqualTo(new CreateAppointmentRequestDTO("Angel", "Motta", "42685123", 1));
+    }
+}
