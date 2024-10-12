@@ -17,6 +17,7 @@ public class AppointmentService {
 
     public Optional<Appointment> getAppointment(Long idRequestedAppointment) {
         Optional<Appointment> result = appointmentRepository.findById(idRequestedAppointment);
+        System.out.println("executed sql statement done");
         return result;
     }
 }

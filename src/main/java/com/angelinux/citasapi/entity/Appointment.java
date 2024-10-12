@@ -9,7 +9,7 @@ public class Appointment {
     @Id
     private Long id;
 
-    private String firstname;
+    private String firstName;
 
     private String lastName;
 
