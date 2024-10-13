@@ -1,14 +1,14 @@
 package com.angelinux.citasapi.controller;
 
 import com.angelinux.citasapi.dto.AppointmentDTO;
+import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
 import com.angelinux.citasapi.entity.Appointment;
 import com.angelinux.citasapi.service.AppointmentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Optional;
 
 @RestController
@@ -29,5 +29,12 @@ public class AppointmentController {
         }
 
         return ResponseEntity.ok(appointmentOptional.get());
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> createAppointment(@RequestBody CreateAppointmentRequestDTO createAppointmentRequest, UriComponentsBuilder ucb) {
+        AppointmentDTO savedAppointmentDTO = appointmentService.createAppointment(createAppointmentRequest);
+        URI locationNewAppointmentURI = ucb.path("/api/appointments/{id}").buildAndExpand(savedAppointmentDTO.id()).toUri();
+        return ResponseEntity.created(locationNewAppointmentURI).build();
     }
 }

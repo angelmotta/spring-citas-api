@@ -1,5 +1,7 @@
 package com.angelinux.citasapi;
 
+import com.angelinux.citasapi.dto.AppointmentDTO;
+import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
 import com.angelinux.citasapi.entity.Appointment;
 import com.angelinux.citasapi.repository.AppointmentRepository;
 import com.jayway.jsonpath.DocumentContext;
@@ -17,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
+
+import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,7 +59,6 @@ class CitasapiApplicationTests {
 
 	@BeforeEach
 	void setUp() {
-//		RestAssured.baseURI = "http://localhost:" + port;
 		appointmentRepository.deleteAll();
 	}
 
@@ -82,5 +85,27 @@ class CitasapiApplicationTests {
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(response.getBody()).isBlank();
+	}
+
+	@Test
+	void shouldCreateANewAppointment() {
+		// Make a POST request to create a new resource
+		CreateAppointmentRequestDTO newAppointmentRequest = new CreateAppointmentRequestDTO("Angel", "Motta", "42685123", 2);
+		ResponseEntity<Void> createResponseReceived = restTemplate.postForEntity("/api/appointments", newAppointmentRequest, Void.class);
+		assertThat(createResponseReceived.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+		// Make a GET request to verify existence of new resource
+		URI locationOfNewAppointment = createResponseReceived.getHeaders().getLocation();
+		ResponseEntity<String> getResponseReceived = restTemplate.getForEntity(locationOfNewAppointment, String.class);
+		assertThat(getResponseReceived.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		// Verify fields from received response in GET request
+		DocumentContext documentContext = JsonPath.parse(getResponseReceived.getBody());
+		Number id = documentContext.read("$.id");
+		String dni = documentContext.read("$.dni");
+
+		assertThat(id).isNotNull();
+		assertThat(dni).isEqualTo("42685123");
+
 	}
 }
