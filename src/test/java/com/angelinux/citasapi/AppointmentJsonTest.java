@@ -3,12 +3,14 @@ package com.angelinux.citasapi;
 
 import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
 import com.angelinux.citasapi.dto.AppointmentDTO;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,6 +22,20 @@ class AppointmentJsonTest {
 
     @Autowired
     private JacksonTester<CreateAppointmentRequestDTO> jsonTesterRequest;
+
+    @Autowired
+    private JacksonTester<AppointmentDTO[]> jsonTesterList;
+
+    private AppointmentDTO[] appointments;
+
+    @BeforeEach
+    void setUp() {
+        appointments = new AppointmentDTO[] {
+                new AppointmentDTO(1L, "Angel", "Motta", "42685123", 1),
+                new AppointmentDTO(2L, "Angel", "Motta", "42685123", 3),
+                new AppointmentDTO(3L, "Angel", "Motta", "42685123", 4)
+        };
+    }
 
     @Test
     void AppointmentResponseSerializationTest() throws IOException {
@@ -51,5 +67,22 @@ class AppointmentJsonTest {
                 }
                 """;
         assertThat(jsonTesterRequest.parse(createAppointmentRequest)).isEqualTo(new CreateAppointmentRequestDTO("Angel", "Motta", "42685123", 1));
+    }
+
+    @Test
+    void appointmentListSerializationTest() throws IOException {
+        assertThat(jsonTesterList.write(appointments)).isStrictlyEqualToJson("listAppointments.json");
+    }
+
+    @Test
+    void appointmentDeserializationTest() throws IOException {
+        String inputList = """
+                [
+                  { "id": 1, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialty": 1 },
+                  { "id": 2, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialty": 3 },
+                  { "id": 3, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialty": 4 }
+                ]
+                """;
+        assertThat(jsonTesterList.parse(inputList)).isEqualTo(appointments);
     }
 }
