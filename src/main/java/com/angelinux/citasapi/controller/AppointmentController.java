@@ -4,11 +4,13 @@ import com.angelinux.citasapi.dto.AppointmentDTO;
 import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
 import com.angelinux.citasapi.entity.Appointment;
 import com.angelinux.citasapi.service.AppointmentService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -32,5 +34,11 @@ public class AppointmentController {
         AppointmentDTO savedAppointmentDTO = appointmentService.createAppointment(createAppointmentRequest);
         URI locationNewAppointmentURI = ucb.path("/api/appointments/{id}").buildAndExpand(savedAppointmentDTO.id()).toUri();
         return ResponseEntity.created(locationNewAppointmentURI).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AppointmentDTO>> findAll() {
+        List<AppointmentDTO> appointmentList = appointmentService.findAll();
+        return ResponseEntity.ok(appointmentList);
     }
 }

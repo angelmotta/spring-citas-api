@@ -7,7 +7,10 @@ import com.angelinux.citasapi.mapper.AppointmentMapper;
 import com.angelinux.citasapi.repository.AppointmentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class AppointmentService {
@@ -29,5 +32,12 @@ public class AppointmentService {
         Appointment savedAppointment = appointmentRepository.save(theNewAppointment);
 
         return appointmentMapper.toAppointmentDto(savedAppointment);
+    }
+
+    public List<AppointmentDTO> findAll() {
+        Iterable<Appointment> appointments = appointmentRepository.findAll();
+        return StreamSupport.stream(appointments.spliterator(), false)
+                .map(appointmentMapper::toAppointmentDto)
+                .collect(Collectors.toList());
     }
 }

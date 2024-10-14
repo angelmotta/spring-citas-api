@@ -106,6 +106,11 @@ class CitasapiApplicationTests {
 
 		assertThat(id).isNotNull();
 		assertThat(dni).isEqualTo("42685123");
+	}
 
+	@Test
+	void shouldReturnAppointmentList() {
+		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 }
