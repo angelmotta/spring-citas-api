@@ -22,13 +22,9 @@ public class AppointmentController {
     }
 
     @GetMapping("/{requestedId}")
-    public ResponseEntity<Appointment> findById(@PathVariable Long requestedId) {
-        Optional<Appointment> appointmentOptional = appointmentService.getAppointment(requestedId);
-        if (appointmentOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(appointmentOptional.get());
+    public ResponseEntity<AppointmentDTO> findById(@PathVariable Long requestedId) {
+        Optional<AppointmentDTO> appointmentOptional = appointmentService.getAppointment(requestedId);
+        return appointmentOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping

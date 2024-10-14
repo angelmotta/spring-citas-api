@@ -25,7 +25,7 @@ class AppointmentJsonTest {
     void AppointmentResponseSerializationTest() throws IOException {
         AppointmentDTO newAppointment = new AppointmentDTO(99L, "Angel", "Motta", "42685123", 1);
 
-        assertThat(jsonTesterResponse.write(newAppointment)).isStrictlyEqualToJson("appointmentSingle.json");
+        assertThat(jsonTesterResponse.write(newAppointment)).isStrictlyEqualToJson("singleAppointment.json");
 
         assertThat(jsonTesterResponse.write(newAppointment)).hasJsonPathNumberValue("@.id");
         assertThat(jsonTesterResponse.write(newAppointment)).extractingJsonPathNumberValue("@.id").isEqualTo(99);

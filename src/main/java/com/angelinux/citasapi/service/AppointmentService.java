@@ -19,10 +19,9 @@ public class AppointmentService {
         this.appointmentMapper = amp;
     }
 
-    public Optional<Appointment> getAppointment(Long idRequestedAppointment) {
-        Optional<Appointment> result = appointmentRepository.findById(idRequestedAppointment);
-        System.out.println("executed sql statement done");
-        return result;
+    public Optional<AppointmentDTO> getAppointment(Long idRequestedAppointment) {
+        return appointmentRepository.findById(idRequestedAppointment)
+                .map(appointmentMapper::toAppointmentDto);
     }
 
     public AppointmentDTO createAppointment(CreateAppointmentRequestDTO requestNewAppointment) {
