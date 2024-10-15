@@ -8,6 +8,7 @@ import com.angelinux.citasapi.repository.AppointmentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,10 +46,12 @@ public class AppointmentService {
     }
 
     public Page<AppointmentDTO> findAll(Pageable pageable) {
+        System.out.println("pageSize received = " + pageable.getPageSize());
         var page = appointmentRepository.findAll(
                 PageRequest.of(
                         pageable.getPageNumber(),
-                        pageable.getPageSize()
+                        pageable.getPageSize(),
+                        pageable.getSortOr(Sort.by(Sort.Direction.ASC, "specialty"))
                 ));
 
         return page.map(appointmentMapper::toAppointmentDto);

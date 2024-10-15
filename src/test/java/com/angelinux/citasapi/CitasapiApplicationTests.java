@@ -152,12 +152,65 @@ class CitasapiApplicationTests {
 		var app2 = appointmentRepository.save(listAppointments.get(1));
 		var app3 = appointmentRepository.save(listAppointments.get(2));
 
-		// HTTP GET request to receive a Page
+		// HTTP GET request to receive a Page of Appointments (idx, size)
 		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments?page=0&size=1", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		DocumentContext documentContext = JsonPath.parse(response.getBody());
 		JSONArray page = documentContext.read("$[*]");
-		assertThat(page.size()).isEqualTo(1);
+		assertThat(page.size()).isEqualTo(1); // size = 1
+	}
+
+	@Test
+	void shouldReturnSortedPageOfAppointments() {
+		// Seed data for database
+		List<Appointment> listAppointments = new ArrayList<>(
+				List.of(new Appointment(null, "Angel", "Motta", "42685123", 3),
+						new Appointment(null, "Angel", "Motta", "42685123", 1),
+						new Appointment(null, "Angel", "Motta", "42685123", 5))
+		);
+
+		var app1 = appointmentRepository.save(listAppointments.get(0));
+		var app2 = appointmentRepository.save(listAppointments.get(1));
+		var app3 = appointmentRepository.save(listAppointments.get(2));
+
+		// HTTP GET request with Page size and Sort parameters
+		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments?page=0&size=1&sort=specialty,desc", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		JSONArray read = documentContext.read("$[*]");
+		assertThat(read.size()).isEqualTo(1); // size = 1
+
+		// Verify correct sorting
+		int specialty = documentContext.read("$[0].specialty");
+		assertThat(specialty).isEqualTo(5);
+	}
+
+	@Test
+	void shouldReturnSortedPageOfAppointmentsUsingDefaultsParameters() {
+		// Seed data for database
+		List<Appointment> listAppointments = new ArrayList<>(
+				List.of(new Appointment(null, "Angel", "Motta", "42685123", 3),
+						new Appointment(null, "Angel", "Motta", "42685123", 1),
+						new Appointment(null, "Angel", "Motta", "42685123", 5))
+		);
+
+		var app1 = appointmentRepository.save(listAppointments.get(0));
+		var app2 = appointmentRepository.save(listAppointments.get(1));
+		var app3 = appointmentRepository.save(listAppointments.get(2));
+
+		// HTTP GET request with No parameters about page size and soring
+		// API will be using defaults: sort=specialties,asc)
+		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		JSONArray pageReceived = documentContext.read("$[*]");
+		assertThat(pageReceived.size()).isEqualTo(3); // Default size = 10
+
+		// Verify correct sorting
+		JSONArray specialties = documentContext.read("$..specialty");
+		assertThat(specialties).containsExactly(1, 3, 5); // ordered list ASC
 	}
 }
