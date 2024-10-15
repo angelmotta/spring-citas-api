@@ -5,6 +5,7 @@ import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
 import com.angelinux.citasapi.entity.Appointment;
 import com.angelinux.citasapi.service.AppointmentService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -37,8 +38,8 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AppointmentDTO>> findAll() {
-        List<AppointmentDTO> appointmentList = appointmentService.findAll();
-        return ResponseEntity.ok(appointmentList);
+    public ResponseEntity<List<AppointmentDTO>> findAll(Pageable pageable) {
+        Page<AppointmentDTO> page = appointmentService.findAll(pageable);
+        return ResponseEntity.ok(page.getContent());
     }
 }

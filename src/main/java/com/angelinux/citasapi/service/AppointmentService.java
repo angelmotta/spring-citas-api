@@ -5,6 +5,9 @@ import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
 import com.angelinux.citasapi.entity.Appointment;
 import com.angelinux.citasapi.mapper.AppointmentMapper;
 import com.angelinux.citasapi.repository.AppointmentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,5 +42,15 @@ public class AppointmentService {
         return StreamSupport.stream(appointments.spliterator(), false)
                 .map(appointmentMapper::toAppointmentDto)
                 .collect(Collectors.toList());
+    }
+
+    public Page<AppointmentDTO> findAll(Pageable pageable) {
+        var page = appointmentRepository.findAll(
+                PageRequest.of(
+                        pageable.getPageNumber(),
+                        pageable.getPageSize()
+                ));
+
+        return page.map(appointmentMapper::toAppointmentDto);
     }
 }

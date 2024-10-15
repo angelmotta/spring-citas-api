@@ -62,7 +62,7 @@ class CitasapiApplicationTests {
 
 	@BeforeEach
 	void setUp() {
-//		appointmentRepository.deleteAll();
+		appointmentRepository.deleteAll();
 	}
 
 	@Test
@@ -137,5 +137,27 @@ class CitasapiApplicationTests {
 											.map(Appointment::getSpecialty)
 											.toArray(Number[]::new);
 		assertThat(listSpecialties).containsExactlyInAnyOrder((Object[]) expectedSpecialties);
+	}
+
+	@Test
+	void shouldReturnPageOfAppointments() {
+		// Seed data for database
+		List<Appointment> listAppointments = new ArrayList<>(
+				List.of(new Appointment(null, "Angel", "Motta", "42685123", 1),
+						new Appointment(null, "Angel", "Motta", "42685123", 3),
+						new Appointment(null, "Angel", "Motta", "42685123", 5))
+		);
+
+		var app1 = appointmentRepository.save(listAppointments.get(0));
+		var app2 = appointmentRepository.save(listAppointments.get(1));
+		var app3 = appointmentRepository.save(listAppointments.get(2));
+
+		// HTTP GET request to receive a Page
+		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments?page=0&size=1", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		JSONArray page = documentContext.read("$[*]");
+		assertThat(page.size()).isEqualTo(1);
 	}
 }
