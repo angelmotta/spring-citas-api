@@ -51,8 +51,8 @@ class AppointmentJsonTest {
         assertThat(jsonTesterResponse.write(newAppointment)).hasJsonPathStringValue("@.lastName");
         assertThat(jsonTesterResponse.write(newAppointment)).extractingJsonPathStringValue("@.lastName").isEqualTo("Motta");
 
-        assertThat(jsonTesterResponse.write(newAppointment)).hasJsonPathNumberValue("@.specialty");
-        assertThat(jsonTesterResponse.write(newAppointment)).extractingJsonPathNumberValue("@.specialty").isEqualTo(1);
+        assertThat(jsonTesterResponse.write(newAppointment)).hasJsonPathNumberValue("@.specialtyId");
+        assertThat(jsonTesterResponse.write(newAppointment)).extractingJsonPathNumberValue("@.specialtyId").isEqualTo(1);
     }
 
     @Test
@@ -62,7 +62,7 @@ class AppointmentJsonTest {
                     "firstName": "Angel",
                     "lastName": "Motta",
                     "dni": "42685123",
-                    "specialty": 1
+                    "specialtyId": 1
                 }
                 """;
         assertThat(jsonTesterRequest.parse(createAppointmentRequest)).isEqualTo(new AppointmentRequestDTO("Angel", "Motta", "42685123", 1));
@@ -77,9 +77,9 @@ class AppointmentJsonTest {
     void appointmentDeserializationTest() throws IOException {
         String inputList = """
                 [
-                  { "id": 1, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialty": 1 },
-                  { "id": 2, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialty": 3 },
-                  { "id": 3, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialty": 4 }
+                  { "id": 1, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 1 },
+                  { "id": 2, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 3 },
+                  { "id": 3, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 4 }
                 ]
                 """;
         assertThat(jsonTesterList.parse(inputList)).isEqualTo(appointments);

@@ -20,7 +20,7 @@ public class AppointmentMapper {
         theNewAppointment.setFirstName(requestNewAppointment.firstName());
         theNewAppointment.setLastName(requestNewAppointment.lastName());
         theNewAppointment.setDni(requestNewAppointment.dni());
-        theNewAppointment.setSpecialty(requestNewAppointment.specialty());
+        theNewAppointment.setSpecialtyId(requestNewAppointment.specialtyId());
 
         return theNewAppointment;
     }
@@ -31,7 +31,7 @@ public class AppointmentMapper {
                 appointment.getFirstName(),
                 appointment.getLastName(),
                 appointment.getDni(),
-                appointment.getSpecialty()
+                appointment.getSpecialtyId()
         );
     }
 }

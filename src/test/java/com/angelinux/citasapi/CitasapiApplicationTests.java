@@ -133,9 +133,9 @@ class CitasapiApplicationTests {
 		int lenList = doc.read("$.length()");
 		assertThat(lenList).isEqualTo(listAppointments.size());
 
-		JSONArray listSpecialties = doc.read("$..specialty");
+		JSONArray listSpecialties = doc.read("$..specialtyId");
 		Number[] expectedSpecialties = listAppointments.stream()
-											.map(Appointment::getSpecialty)
+											.map(Appointment::getSpecialtyId)
 											.toArray(Number[]::new);
 		assertThat(listSpecialties).containsExactlyInAnyOrder((Object[]) expectedSpecialties);
 	}
@@ -176,7 +176,7 @@ class CitasapiApplicationTests {
 		var app3 = appointmentRepository.save(listAppointments.get(2));
 
 		// HTTP GET request with Page size and Sort parameters
-		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments?page=0&size=1&sort=specialty,desc", String.class);
+		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments?page=0&size=1&sort=specialtyId,desc", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -184,7 +184,7 @@ class CitasapiApplicationTests {
 		assertThat(read.size()).isEqualTo(1); // size = 1
 
 		// Verify correct sorting
-		int specialty = documentContext.read("$[0].specialty");
+		int specialty = documentContext.read("$[0].specialtyId");
 		assertThat(specialty).isEqualTo(5);
 	}
 
@@ -211,7 +211,7 @@ class CitasapiApplicationTests {
 		assertThat(pageReceived.size()).isEqualTo(3); // Default size = 10
 
 		// Verify correct sorting
-		JSONArray specialties = documentContext.read("$..specialty");
+		JSONArray specialties = documentContext.read("$..specialtyId");
 		assertThat(specialties).containsExactly(1, 3, 5); // ordered list ASC
 	}
 
@@ -234,7 +234,7 @@ class CitasapiApplicationTests {
 
 		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 		DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
-		Number specialtyId = documentContext.read("$.specialty");
+		Number specialtyId = documentContext.read("$.specialtyId");
 		assertThat(specialtyId).isEqualTo(5);
 	}
 

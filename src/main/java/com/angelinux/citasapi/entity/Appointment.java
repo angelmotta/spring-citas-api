@@ -1,7 +1,6 @@
 package com.angelinux.citasapi.entity;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("appointments")
@@ -15,17 +14,17 @@ public class Appointment {
 
     private String dni;
 
-    private Integer specialty;
+    private Integer specialtyId;
 
     public Appointment() {
     }
 
-    public Appointment(Long id, String firstName, String lastName, String dni, Integer specialty) {
+    public Appointment(Long id, String firstName, String lastName, String dni, Integer specialtyId) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.dni = dni;
-        this.specialty = specialty;
+        this.specialtyId = specialtyId;
     }
 
     public Long getId() {
@@ -60,12 +59,12 @@ public class Appointment {
         this.dni = dni;
     }
 
-    public Integer getSpecialty() {
-        return specialty;
+    public Integer getSpecialtyId() {
+        return specialtyId;
     }
 
-    public void setSpecialty(Integer specialty) {
-        this.specialty = specialty;
+    public void setSpecialtyId(Integer specialtyId) {
+        this.specialtyId = specialtyId;
     }
 
     @Override
@@ -75,7 +74,7 @@ public class Appointment {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", dni='" + dni + '\'' +
-                ", specialty=" + specialty +
+                ", specialtyId=" + specialtyId +
                 '}';
     }
 }

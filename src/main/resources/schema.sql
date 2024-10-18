@@ -3,6 +3,6 @@ CREATE TABLE IF NOT EXISTS appointments (
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     dni VARCHAR(50) NOT NULL,
-    specialty INTEGER NOT NULL,
+    specialty_id INTEGER NOT NULL,
     PRIMARY KEY(id)
 );

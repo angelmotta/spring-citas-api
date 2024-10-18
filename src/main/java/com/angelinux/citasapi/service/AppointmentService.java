@@ -46,12 +46,11 @@ public class AppointmentService {
     }
 
     public Page<AppointmentDTO> findAll(Pageable pageable) {
-        System.out.println("pageSize received = " + pageable.getPageSize());
         var page = appointmentRepository.findAll(
                 PageRequest.of(
                         pageable.getPageNumber(),
                         pageable.getPageSize(),
-                        pageable.getSortOr(Sort.by(Sort.Direction.ASC, "specialty"))
+                        pageable.getSortOr(Sort.by(Sort.Direction.ASC, "specialtyId"))
                 ));
 
         return page.map(appointmentMapper::toAppointmentDto);

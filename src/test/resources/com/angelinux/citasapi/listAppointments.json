@@ -4,20 +4,20 @@
     "firstName": "Angel",
     "lastName": "Motta",
     "dni": "42685123",
-    "specialty": 1
+    "specialtyId": 1
   },
   {
     "id": 2,
     "firstName": "Angel",
     "lastName": "Motta",
     "dni": "42685123",
-    "specialty": 3
+    "specialtyId": 3
   },
   {
     "id": 3,
     "firstName": "Angel",
     "lastName": "Motta",
     "dni": "42685123",
-    "specialty": 4
+    "specialtyId": 4
   }
 ]
