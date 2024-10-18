@@ -237,4 +237,16 @@ class CitasapiApplicationTests {
 		Number specialtyId = documentContext.read("$.specialty");
 		assertThat(specialtyId).isEqualTo(5);
 	}
+
+	@Test
+	void shouldNotUpdateAnAppointmentDoesNotExist() {
+		// Creation of a new appointment using PUT is now allowed
+		// Try to update an appointment does not exist
+		var updatedAppointment = new AppointmentRequestDTO("Angel", "Motta", "42685123", 5);
+		HttpEntity<AppointmentRequestDTO> requestEntity = new HttpEntity<>(updatedAppointment);
+		ResponseEntity<Void> response = restTemplate
+				.exchange("/api/appointments/1111", HttpMethod.PUT, requestEntity, Void.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
 }

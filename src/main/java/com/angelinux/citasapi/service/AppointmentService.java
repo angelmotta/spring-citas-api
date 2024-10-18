@@ -58,10 +58,14 @@ public class AppointmentService {
     }
 
     public Optional<AppointmentDTO> updateAppointment(Long idAppointment, AppointmentRequestDTO updateAppointmentRequest) {
-        // Todo: verify if appointment exists
-        //var isAnExistingAppointment = appointmentRepository.existsById(idAppointment);
+        var isAnExistingAppointment = appointmentRepository.existsById(idAppointment);
+        if (!isAnExistingAppointment) {
+            return Optional.empty();
+        }
 
         Appointment updatedAppointment = appointmentMapper.toEntity(updateAppointmentRequest, idAppointment);
+        System.out.println("Try to update this");
+        System.out.println(updatedAppointment);
         var theUpdatedAppointment = appointmentRepository.save(updatedAppointment);
         return Optional.ofNullable(appointmentMapper.toAppointmentDto(theUpdatedAppointment));
     }

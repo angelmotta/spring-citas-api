@@ -67,4 +67,15 @@ public class Appointment {
     public void setSpecialty(Integer specialty) {
         this.specialty = specialty;
     }
+
+    @Override
+    public String toString() {
+        return "Appointment{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", dni='" + dni + '\'' +
+                ", specialty=" + specialty +
+                '}';
+    }
 }
