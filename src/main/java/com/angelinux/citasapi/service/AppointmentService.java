@@ -1,7 +1,7 @@
 package com.angelinux.citasapi.service;
 
 import com.angelinux.citasapi.dto.AppointmentDTO;
-import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
+import com.angelinux.citasapi.dto.AppointmentRequestDTO;
 import com.angelinux.citasapi.entity.Appointment;
 import com.angelinux.citasapi.mapper.AppointmentMapper;
 import com.angelinux.citasapi.repository.AppointmentRepository;
@@ -31,7 +31,7 @@ public class AppointmentService {
                 .map(appointmentMapper::toAppointmentDto);
     }
 
-    public AppointmentDTO createAppointment(CreateAppointmentRequestDTO requestNewAppointment) {
+    public AppointmentDTO createAppointment(AppointmentRequestDTO requestNewAppointment) {
         Appointment theNewAppointment = appointmentMapper.toEntity(requestNewAppointment);
         Appointment savedAppointment = appointmentRepository.save(theNewAppointment);
 
@@ -56,4 +56,14 @@ public class AppointmentService {
 
         return page.map(appointmentMapper::toAppointmentDto);
     }
+
+    public Optional<AppointmentDTO> updateAppointment(Long idAppointment, AppointmentRequestDTO updateAppointmentRequest) {
+        // Todo: verify if appointment exists
+        //var isAnExistingAppointment = appointmentRepository.existsById(idAppointment);
+
+        Appointment updatedAppointment = appointmentMapper.toEntity(updateAppointmentRequest, idAppointment);
+        var theUpdatedAppointment = appointmentRepository.save(updatedAppointment);
+        return Optional.ofNullable(appointmentMapper.toAppointmentDto(theUpdatedAppointment));
+    }
+
 }

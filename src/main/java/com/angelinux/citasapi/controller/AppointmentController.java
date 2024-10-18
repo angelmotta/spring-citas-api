@@ -1,8 +1,7 @@
 package com.angelinux.citasapi.controller;
 
 import com.angelinux.citasapi.dto.AppointmentDTO;
-import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
-import com.angelinux.citasapi.entity.Appointment;
+import com.angelinux.citasapi.dto.AppointmentRequestDTO;
 import com.angelinux.citasapi.service.AppointmentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +30,7 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createAppointment(@RequestBody CreateAppointmentRequestDTO createAppointmentRequest, UriComponentsBuilder ucb) {
+    public ResponseEntity<Void> createAppointment(@RequestBody AppointmentRequestDTO createAppointmentRequest, UriComponentsBuilder ucb) {
         AppointmentDTO savedAppointmentDTO = appointmentService.createAppointment(createAppointmentRequest);
         URI locationNewAppointmentURI = ucb.path("/api/appointments/{id}").buildAndExpand(savedAppointmentDTO.id()).toUri();
         return ResponseEntity.created(locationNewAppointmentURI).build();
@@ -41,5 +40,14 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentDTO>> findAll(Pageable pageable) {
         Page<AppointmentDTO> page = appointmentService.findAll(pageable);
         return ResponseEntity.ok(page.getContent());
+    }
+
+    @PutMapping("/{idAppointment}")
+    public ResponseEntity<Void> updateAppointment(@PathVariable Long idAppointment, @RequestBody AppointmentRequestDTO updateRequest) {
+        var response = appointmentService.updateAppointment(idAppointment, updateRequest);
+        if (response.isEmpty()) {
+            return ResponseEntity.notFound().build(); // HTTP 404
+        }
+        return ResponseEntity.noContent().build(); // HTTP 204
     }
 }

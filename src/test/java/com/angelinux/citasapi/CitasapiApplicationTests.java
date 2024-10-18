@@ -1,7 +1,6 @@
 package com.angelinux.citasapi;
 
-import com.angelinux.citasapi.dto.AppointmentDTO;
-import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
+import com.angelinux.citasapi.dto.AppointmentRequestDTO;
 import com.angelinux.citasapi.entity.Appointment;
 import com.angelinux.citasapi.repository.AppointmentRepository;
 import com.jayway.jsonpath.DocumentContext;
@@ -15,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -93,7 +94,7 @@ class CitasapiApplicationTests {
 	@Test
 	void shouldCreateANewAppointment() {
 		// Make a POST request to create a new resource
-		CreateAppointmentRequestDTO newAppointmentRequest = new CreateAppointmentRequestDTO("Angel", "Motta", "42685123", 2);
+		AppointmentRequestDTO newAppointmentRequest = new AppointmentRequestDTO("Angel", "Motta", "42685123", 2);
 		ResponseEntity<Void> createResponseReceived = restTemplate.postForEntity("/api/appointments", newAppointmentRequest, Void.class);
 		assertThat(createResponseReceived.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
@@ -212,5 +213,28 @@ class CitasapiApplicationTests {
 		// Verify correct sorting
 		JSONArray specialties = documentContext.read("$..specialty");
 		assertThat(specialties).containsExactly(1, 3, 5); // ordered list ASC
+	}
+
+	@Test
+	void shouldUpdateAnExistingAppointment() {
+		// Pre-conditions
+		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", 1);
+		var existingAppointment = appointmentRepository.save(theAppointment);
+
+		// Update existing appointment (update speciality from 1 to 5)
+		var updatedAppointment = new AppointmentRequestDTO("Angel", "Motta", "42685123", 5);
+		HttpEntity<AppointmentRequestDTO> requestEntity = new HttpEntity<>(updatedAppointment);
+		ResponseEntity<Void> response = restTemplate
+											.exchange("/api/appointments/" + existingAppointment.getId(), HttpMethod.PUT, requestEntity, Void.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+		// Verify reading your update
+		ResponseEntity<String> getResponse = restTemplate
+												.getForEntity("/api/appointments/" + existingAppointment.getId(), String.class);
+
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+		DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+		Number specialtyId = documentContext.read("$.specialty");
+		assertThat(specialtyId).isEqualTo(5);
 	}
 }

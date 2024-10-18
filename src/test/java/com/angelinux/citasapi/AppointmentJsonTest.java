@@ -1,7 +1,7 @@
 package com.angelinux.citasapi;
 
 
-import com.angelinux.citasapi.dto.CreateAppointmentRequestDTO;
+import com.angelinux.citasapi.dto.AppointmentRequestDTO;
 import com.angelinux.citasapi.dto.AppointmentDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,7 +20,7 @@ class AppointmentJsonTest {
     private JacksonTester<AppointmentDTO> jsonTesterResponse;
 
     @Autowired
-    private JacksonTester<CreateAppointmentRequestDTO> jsonTesterRequest;
+    private JacksonTester<AppointmentRequestDTO> jsonTesterRequest;
 
     @Autowired
     private JacksonTester<AppointmentDTO[]> jsonTesterList;
@@ -66,7 +65,7 @@ class AppointmentJsonTest {
                     "specialty": 1
                 }
                 """;
-        assertThat(jsonTesterRequest.parse(createAppointmentRequest)).isEqualTo(new CreateAppointmentRequestDTO("Angel", "Motta", "42685123", 1));
+        assertThat(jsonTesterRequest.parse(createAppointmentRequest)).isEqualTo(new AppointmentRequestDTO("Angel", "Motta", "42685123", 1));
     }
 
     @Test
