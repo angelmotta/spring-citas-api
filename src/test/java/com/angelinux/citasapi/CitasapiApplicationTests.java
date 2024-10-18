@@ -249,4 +249,27 @@ class CitasapiApplicationTests {
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
+
+	@Test
+	void shouldDeleteExistingAppointment() {
+		// Pre-conditions
+		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", 1);
+		var existingAppointment = appointmentRepository.save(theAppointment);
+
+		ResponseEntity<Void> response = restTemplate
+											.exchange("/api/appointments/" + existingAppointment.getId(), HttpMethod.DELETE, null, Void.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+		// Verify resource is actually deleted
+		ResponseEntity<String> getResponse = restTemplate
+												.getForEntity("/api/appointments/" + existingAppointment.getId(), String.class);
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
+	void shouldNotDeleteAnAppointmentThatDoesNotExist() {
+		ResponseEntity<Void> response = restTemplate
+											.exchange("/api/appointments/1111", HttpMethod.DELETE, null, Void.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
 }

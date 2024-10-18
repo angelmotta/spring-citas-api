@@ -64,10 +64,17 @@ public class AppointmentService {
         }
 
         Appointment updatedAppointment = appointmentMapper.toEntity(updateAppointmentRequest, idAppointment);
-        System.out.println("Try to update this");
-        System.out.println(updatedAppointment);
         var theUpdatedAppointment = appointmentRepository.save(updatedAppointment);
         return Optional.ofNullable(appointmentMapper.toAppointmentDto(theUpdatedAppointment));
+    }
+
+    public boolean deleteAppointment(Long idAppointment) {
+        var isAnExistingAppointment = appointmentRepository.existsById(idAppointment);
+        if (isAnExistingAppointment) {
+            appointmentRepository.deleteById(idAppointment);
+            return true;
+        }
+        return false;
     }
 
 }

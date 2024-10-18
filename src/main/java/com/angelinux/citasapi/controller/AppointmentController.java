@@ -50,4 +50,13 @@ public class AppointmentController {
         }
         return ResponseEntity.noContent().build(); // HTTP 204
     }
+
+    @DeleteMapping("/{idAppointment}")
+    public ResponseEntity<Void> deleteAppointment(@PathVariable Long idAppointment) {
+        var wasDeleted = appointmentService.deleteAppointment(idAppointment);
+        if (wasDeleted) {
+            return ResponseEntity.noContent().build(); // HTTP 204
+        }
+        return ResponseEntity.notFound().build(); // HTTP 404
+    }
 }
