@@ -1,4 +1,4 @@
-package com.angelinux.citasapi.config;
+package com.angelinux.citasapi.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;

@@ -1,4 +1,4 @@
-package com.angelinux.citasapi.callback;
+package com.angelinux.citasapi.common.callback;
 
 import com.angelinux.citasapi.entity.Appointment;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;

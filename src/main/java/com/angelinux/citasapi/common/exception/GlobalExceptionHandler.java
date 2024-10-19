@@ -1,4 +1,4 @@
-package com.angelinux.citasapi.exception;
+package com.angelinux.citasapi.common.exception;
 
 import com.angelinux.citasapi.dto.InvalidRequestResponseDTO;
 import org.springframework.http.HttpStatus;

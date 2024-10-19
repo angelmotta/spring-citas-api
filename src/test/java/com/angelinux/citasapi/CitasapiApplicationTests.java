@@ -126,7 +126,7 @@ class CitasapiApplicationTests {
 		List<Appointment> listAppointments = new ArrayList<>(
 				List.of(new Appointment(null, "Angel", "Motta", "42685123", 1),
 						new Appointment(null, "Angel", "Motta", "42685123", 3),
-						new Appointment(null, "Angel", "Motta", "42685123", 5))
+						new Appointment(null, "Angel", "Motta", "42685123", 2))
 		);
 
 		var app1 = appointmentRepository.save(listAppointments.get(0));
@@ -154,7 +154,7 @@ class CitasapiApplicationTests {
 		List<Appointment> listAppointments = new ArrayList<>(
 				List.of(new Appointment(null, "Angel", "Motta", "42685123", 1),
 						new Appointment(null, "Angel", "Motta", "42685123", 3),
-						new Appointment(null, "Angel", "Motta", "42685123", 5))
+						new Appointment(null, "Angel", "Motta", "42685123", 4))
 		);
 
 		var app1 = appointmentRepository.save(listAppointments.get(0));
@@ -176,7 +176,7 @@ class CitasapiApplicationTests {
 		List<Appointment> listAppointments = new ArrayList<>(
 				List.of(new Appointment(null, "Angel", "Motta", "42685123", 3),
 						new Appointment(null, "Angel", "Motta", "42685123", 1),
-						new Appointment(null, "Angel", "Motta", "42685123", 5))
+						new Appointment(null, "Angel", "Motta", "42685123", 4))
 		);
 
 		var app1 = appointmentRepository.save(listAppointments.get(0));
@@ -193,7 +193,7 @@ class CitasapiApplicationTests {
 
 		// Verify correct sorting
 		int specialty = documentContext.read("$[0].specialtyId");
-		assertThat(specialty).isEqualTo(5);
+		assertThat(specialty).isEqualTo(4);
 	}
 
 	@Test
@@ -202,7 +202,7 @@ class CitasapiApplicationTests {
 		List<Appointment> listAppointments = new ArrayList<>(
 				List.of(new Appointment(null, "Angel", "Motta", "42685123", 3),
 						new Appointment(null, "Angel", "Motta", "42685123", 1),
-						new Appointment(null, "Angel", "Motta", "42685123", 5))
+						new Appointment(null, "Angel", "Motta", "42685123", 4))
 		);
 
 		var app1 = appointmentRepository.save(listAppointments.get(0));
@@ -220,7 +220,7 @@ class CitasapiApplicationTests {
 
 		// Verify correct sorting
 		JSONArray specialties = documentContext.read("$..specialtyId");
-		assertThat(specialties).containsExactly(1, 3, 5); // ordered list ASC
+		assertThat(specialties).containsExactly(1, 3, 4); // ordered list ASC
 	}
 
 	@Test
@@ -230,7 +230,7 @@ class CitasapiApplicationTests {
 		var existingAppointment = appointmentRepository.save(theAppointment);
 
 		// Update existing appointment (update speciality from 1 to 5)
-		var updatedAppointment = new AppointmentRequestDTO("Angel", "Motta", "42685123", 5);
+		var updatedAppointment = new AppointmentRequestDTO("Angel", "Motta", "42685123", 4);
 		HttpEntity<AppointmentRequestDTO> requestEntity = new HttpEntity<>(updatedAppointment);
 		ResponseEntity<Void> response = restTemplate
 											.exchange("/api/appointments/" + existingAppointment.getId(), HttpMethod.PUT, requestEntity, Void.class);
@@ -243,7 +243,7 @@ class CitasapiApplicationTests {
 		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 		DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
 		Number specialtyId = documentContext.read("$.specialtyId");
-		assertThat(specialtyId).isEqualTo(5);
+		assertThat(specialtyId).isEqualTo(4);
 	}
 
 	@Test
