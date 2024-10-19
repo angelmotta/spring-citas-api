@@ -247,6 +247,22 @@ class CitasapiApplicationTests {
 	}
 
 	@Test
+	void shouldNotUpdateExistingAppointmentWithInvalidRequest() {
+		// Pre-conditions
+		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", 1);
+		var existingAppointment = appointmentRepository.save(theAppointment);
+
+		// Try to update existing appointment (update speciality from 1 to 5)
+		var updatedAppointment = new AppointmentRequestDTO(null, "Motta", "42685123", 5);
+		HttpEntity<AppointmentRequestDTO> requestEntity = new HttpEntity<>(updatedAppointment);
+		ResponseEntity<Void> response = restTemplate
+											.exchange("/api/appointments/" + existingAppointment.getId(),
+													HttpMethod.PUT, requestEntity,
+													Void.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
 	void shouldNotUpdateAnAppointmentDoesNotExist() {
 		// Creation of a new appointment using PUT is now allowed
 		// Try to update an appointment does not exist

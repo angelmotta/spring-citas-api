@@ -44,7 +44,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{idAppointment}")
-    public ResponseEntity<Void> updateAppointment(@PathVariable Long idAppointment, @RequestBody AppointmentRequestDTO updateRequest) {
+    public ResponseEntity<Void> updateAppointment(@PathVariable Long idAppointment, @Valid @RequestBody AppointmentRequestDTO updateRequest) {
         var response = appointmentService.updateAppointment(idAppointment, updateRequest);
         if (response.isEmpty()) {
             return ResponseEntity.notFound().build(); // HTTP 404
