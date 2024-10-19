@@ -113,6 +113,14 @@ class CitasapiApplicationTests {
 	}
 
 	@Test
+	void shouldNotCreateANewAppointmentWithInvalidRequest() {
+		// Make a POST request using an invalid request body
+		AppointmentRequestDTO newAppointmentRequest = new AppointmentRequestDTO(null, "Motta", "42685123", 2);
+		ResponseEntity<Void> createResponseReceived = restTemplate.postForEntity("/api/appointments", newAppointmentRequest, Void.class);
+		assertThat(createResponseReceived.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
 	void shouldReturnAppointmentList() {
 		// Seed data for database
 		List<Appointment> listAppointments = new ArrayList<>(

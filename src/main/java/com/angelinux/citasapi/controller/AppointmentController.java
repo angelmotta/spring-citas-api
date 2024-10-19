@@ -3,6 +3,7 @@ package com.angelinux.citasapi.controller;
 import com.angelinux.citasapi.dto.AppointmentDTO;
 import com.angelinux.citasapi.dto.AppointmentRequestDTO;
 import com.angelinux.citasapi.service.AppointmentService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createAppointment(@RequestBody AppointmentRequestDTO createAppointmentRequest, UriComponentsBuilder ucb) {
+    public ResponseEntity<Void> createAppointment(@Valid @RequestBody AppointmentRequestDTO createAppointmentRequest, UriComponentsBuilder ucb) {
         AppointmentDTO savedAppointmentDTO = appointmentService.createAppointment(createAppointmentRequest);
         URI locationNewAppointmentURI = ucb.path("/api/appointments/{id}").buildAndExpand(savedAppointmentDTO.id()).toUri();
         return ResponseEntity.created(locationNewAppointmentURI).build();
