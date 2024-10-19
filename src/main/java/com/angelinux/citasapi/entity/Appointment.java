@@ -1,7 +1,10 @@
 package com.angelinux.citasapi.entity;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.Instant;
 
 @Table("appointments")
 public class Appointment {
@@ -15,6 +18,9 @@ public class Appointment {
     private String dni;
 
     private Integer specialtyId;
+
+    @CreatedDate
+    private Instant createdAt;
 
     public Appointment() {
     }
@@ -65,6 +71,14 @@ public class Appointment {
 
     public void setSpecialtyId(Integer specialtyId) {
         this.specialtyId = specialtyId;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
