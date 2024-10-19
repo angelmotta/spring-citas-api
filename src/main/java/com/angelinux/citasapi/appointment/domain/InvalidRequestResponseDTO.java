@@ -1,4 +1,4 @@
-package com.angelinux.citasapi.dto;
+package com.angelinux.citasapi.appointment.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;

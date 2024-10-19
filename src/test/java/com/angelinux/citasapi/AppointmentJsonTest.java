@@ -1,8 +1,8 @@
 package com.angelinux.citasapi;
 
 
-import com.angelinux.citasapi.dto.AppointmentRequestDTO;
-import com.angelinux.citasapi.dto.AppointmentDTO;
+import com.angelinux.citasapi.appointment.domain.AppointmentRequestDTO;
+import com.angelinux.citasapi.appointment.domain.AppointmentDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

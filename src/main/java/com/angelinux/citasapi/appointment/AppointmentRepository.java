@@ -1,6 +1,6 @@
-package com.angelinux.citasapi.repository;
+package com.angelinux.citasapi.appointment;
 
-import com.angelinux.citasapi.entity.Appointment;
+import com.angelinux.citasapi.appointment.domain.Appointment;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 

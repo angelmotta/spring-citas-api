@@ -1,6 +1,6 @@
 package com.angelinux.citasapi.common.callback;
 
-import com.angelinux.citasapi.entity.Appointment;
+import com.angelinux.citasapi.appointment.domain.Appointment;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;

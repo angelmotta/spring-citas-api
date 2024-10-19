@@ -1,8 +1,8 @@
 package com.angelinux.citasapi;
 
-import com.angelinux.citasapi.dto.AppointmentRequestDTO;
-import com.angelinux.citasapi.entity.Appointment;
-import com.angelinux.citasapi.repository.AppointmentRepository;
+import com.angelinux.citasapi.appointment.domain.AppointmentRequestDTO;
+import com.angelinux.citasapi.appointment.domain.Appointment;
+import com.angelinux.citasapi.appointment.AppointmentRepository;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;

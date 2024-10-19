@@ -1,8 +1,7 @@
-package com.angelinux.citasapi.controller;
+package com.angelinux.citasapi.appointment;
 
-import com.angelinux.citasapi.dto.AppointmentDTO;
-import com.angelinux.citasapi.dto.AppointmentRequestDTO;
-import com.angelinux.citasapi.service.AppointmentService;
+import com.angelinux.citasapi.appointment.domain.AppointmentDTO;
+import com.angelinux.citasapi.appointment.domain.AppointmentRequestDTO;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

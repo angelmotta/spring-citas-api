@@ -1,10 +1,8 @@
-package com.angelinux.citasapi.service;
+package com.angelinux.citasapi.appointment;
 
-import com.angelinux.citasapi.dto.AppointmentDTO;
-import com.angelinux.citasapi.dto.AppointmentRequestDTO;
-import com.angelinux.citasapi.entity.Appointment;
-import com.angelinux.citasapi.mapper.AppointmentMapper;
-import com.angelinux.citasapi.repository.AppointmentRepository;
+import com.angelinux.citasapi.appointment.domain.AppointmentDTO;
+import com.angelinux.citasapi.appointment.domain.AppointmentRequestDTO;
+import com.angelinux.citasapi.appointment.domain.Appointment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

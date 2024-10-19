@@ -1,4 +1,4 @@
-package com.angelinux.citasapi.dto;
+package com.angelinux.citasapi.appointment.domain;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,4 +1,4 @@
-package com.angelinux.citasapi.entity;
+package com.angelinux.citasapi.appointment.domain;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
