@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "specialtyName": "General"
+  },
+  {
+    "id": 2,
+    "specialtyName": "Odontología"
+  },
+  {
+    "id": 3,
+    "specialtyName": "Pediatría"
+  },
+  {
+    "id": 4,
+    "specialtyName": "Psicología"
+  }
+]
