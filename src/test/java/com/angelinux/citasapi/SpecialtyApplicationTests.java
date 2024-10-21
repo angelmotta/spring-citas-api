@@ -1,7 +1,9 @@
 package com.angelinux.citasapi;
 
+import com.angelinux.citasapi.appointment.domain.Appointment;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -65,5 +67,21 @@ public class SpecialtyApplicationTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
         assertThat(response.getBody()).isBlank();
+    }
+
+    @Test
+    void shouldReturnASpecialtyList() {
+        // Pre-conditions
+        final int SIZELISTSPECIALTIES = 4; // todo: change this for value from repository
+        // HTTP GET: this should receive a List<Appointment>
+        ResponseEntity<String> response = restTemplate.getForEntity("/api/specialties", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext doc = JsonPath.parse(response.getBody());
+        int lenList = doc.read("$.length()");
+        assertThat(lenList).isEqualTo(SIZELISTSPECIALTIES);
+
+        JSONArray listSpecialties = doc.read("$..id");
+        assertThat(listSpecialties).containsExactlyInAnyOrder(1, 2, 3, 4);
     }
 }

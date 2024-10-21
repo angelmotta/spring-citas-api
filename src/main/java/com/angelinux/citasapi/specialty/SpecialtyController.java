@@ -33,4 +33,9 @@ public class SpecialtyController {
         Optional<SpecialtyDTO> specialityFound = specialties.stream().filter(specialty -> specialty.id().equals(specialtyId)).findFirst();
         return specialityFound.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping
+    public ResponseEntity<List<SpecialtyDTO>> findAll() {
+        return ResponseEntity.ok(specialties);
+    }
 }
