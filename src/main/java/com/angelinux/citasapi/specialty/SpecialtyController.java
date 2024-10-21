@@ -2,6 +2,7 @@ package com.angelinux.citasapi.specialty;
 
 import com.angelinux.citasapi.appointment.domain.AppointmentDTO;
 import com.angelinux.citasapi.specialty.domain.SpecialtyDTO;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,8 +29,8 @@ public class SpecialtyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SpecialtyDTO>> findAll() {
-        var result = specialtyService.findAll();
-        return ResponseEntity.ok(result);
+    public ResponseEntity<List<SpecialtyDTO>> findAll(Pageable pageable) {
+        var result = specialtyService.findAll(pageable);
+        return ResponseEntity.ok(result.getContent());
     }
 }
