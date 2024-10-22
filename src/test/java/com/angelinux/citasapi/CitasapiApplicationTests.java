@@ -3,6 +3,8 @@ package com.angelinux.citasapi;
 import com.angelinux.citasapi.appointment.domain.AppointmentRequestDTO;
 import com.angelinux.citasapi.appointment.domain.Appointment;
 import com.angelinux.citasapi.appointment.AppointmentRepository;
+import com.angelinux.citasapi.specialty.SpecialtyRepository;
+import com.angelinux.citasapi.specialty.domain.Specialty;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
@@ -43,6 +45,8 @@ class CitasapiApplicationTests {
 	static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
 			"postgres:16"
 	);
+    @Autowired
+    private SpecialtyRepository specialtyRepository;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -68,7 +72,13 @@ class CitasapiApplicationTests {
 
 	@Test
 	void shouldReturnAnAppointmentWhenItExists() {
-		var appointmentSaved = appointmentRepository.save(new Appointment(null, "Angel", "Motta", "42685123", 1));
+		var specialtyResponse = specialtyRepository.findById(1);
+		if (specialtyResponse.isEmpty()) {
+			// should not happen
+			throw new RuntimeException("Specialty not found");
+		}
+		Specialty specialty = specialtyResponse.get();
+		var appointmentSaved = appointmentRepository.save(new Appointment(null, "Angel", "Motta", "42685123", specialty.getId()));
 		Long appointmentId = appointmentSaved.getId();
 
 		ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/appointments/" + appointmentId, String.class);
@@ -123,15 +133,23 @@ class CitasapiApplicationTests {
 	@Test
 	void shouldReturnAppointmentList() {
 		// Seed data for database
+		// Get Specialties
+		var specialty1 = specialtyRepository.findById(1);
+		var specialty2 = specialtyRepository.findById(2);
+		var specialty3 = specialtyRepository.findById(3);
+		if (specialty1.isEmpty() || specialty2.isEmpty() || specialty3.isEmpty()) {
+			// should not happen
+			throw new RuntimeException("Specialty not found");
+		}
 		List<Appointment> listAppointments = new ArrayList<>(
-				List.of(new Appointment(null, "Angel", "Motta", "42685123", 1),
-						new Appointment(null, "Angel", "Motta", "42685123", 3),
-						new Appointment(null, "Angel", "Motta", "42685123", 2))
+				List.of(new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId()),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty3.get().getId()),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty2.get().getId()))
 		);
 
-		var app1 = appointmentRepository.save(listAppointments.get(0));
-		var app2 = appointmentRepository.save(listAppointments.get(1));
-		var app3 = appointmentRepository.save(listAppointments.get(2));
+		appointmentRepository.save(listAppointments.get(0));
+		appointmentRepository.save(listAppointments.get(1));
+		appointmentRepository.save(listAppointments.get(2));
 
 		// Verify HTTP GET: this should receive a List<Appointment>
 		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments", String.class);
@@ -151,15 +169,24 @@ class CitasapiApplicationTests {
 	@Test
 	void shouldReturnPageOfAppointments() {
 		// Seed data for database
+		// Get Specialties
+		var specialty1 = specialtyRepository.findById(1);
+		var specialty3 = specialtyRepository.findById(3);
+		var specialty4 = specialtyRepository.findById(4);
+		if (specialty1.isEmpty() || specialty3.isEmpty() || specialty4.isEmpty()) {
+			// should not happen
+			throw new RuntimeException("Specialty not found");
+		}
+
 		List<Appointment> listAppointments = new ArrayList<>(
-				List.of(new Appointment(null, "Angel", "Motta", "42685123", 1),
-						new Appointment(null, "Angel", "Motta", "42685123", 3),
-						new Appointment(null, "Angel", "Motta", "42685123", 4))
+				List.of(new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId()),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty3.get().getId()),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty4.get().getId()))
 		);
 
-		var app1 = appointmentRepository.save(listAppointments.get(0));
-		var app2 = appointmentRepository.save(listAppointments.get(1));
-		var app3 = appointmentRepository.save(listAppointments.get(2));
+		appointmentRepository.save(listAppointments.get(0));
+		appointmentRepository.save(listAppointments.get(1));
+		appointmentRepository.save(listAppointments.get(2));
 
 		// HTTP GET request to receive a Page of Appointments (idx, size)
 		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments?page=0&size=1", String.class);
@@ -173,15 +200,24 @@ class CitasapiApplicationTests {
 	@Test
 	void shouldReturnSortedPageOfAppointments() {
 		// Seed data for database
+		// Get Specialties
+		var specialty1 = specialtyRepository.findById(1);
+		var specialty3 = specialtyRepository.findById(3);
+		var specialty4 = specialtyRepository.findById(4);
+		if (specialty1.isEmpty() || specialty3.isEmpty() || specialty4.isEmpty()) {
+			// should not happen
+			throw new RuntimeException("Specialty not found");
+		}
+
 		List<Appointment> listAppointments = new ArrayList<>(
-				List.of(new Appointment(null, "Angel", "Motta", "42685123", 3),
-						new Appointment(null, "Angel", "Motta", "42685123", 1),
-						new Appointment(null, "Angel", "Motta", "42685123", 4))
+				List.of(new Appointment(null, "Angel", "Motta", "42685123", specialty3.get().getId()),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId()),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty4.get().getId()))
 		);
 
-		var app1 = appointmentRepository.save(listAppointments.get(0));
-		var app2 = appointmentRepository.save(listAppointments.get(1));
-		var app3 = appointmentRepository.save(listAppointments.get(2));
+		appointmentRepository.save(listAppointments.get(0));
+		appointmentRepository.save(listAppointments.get(1));
+		appointmentRepository.save(listAppointments.get(2));
 
 		// HTTP GET request with Page size and Sort parameters
 		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments?page=0&size=1&sort=specialtyId,desc", String.class);
@@ -199,15 +235,23 @@ class CitasapiApplicationTests {
 	@Test
 	void shouldReturnSortedPageOfAppointmentsUsingDefaultsParameters() {
 		// Seed data for database
+		// Get Specialties
+		var specialty1 = specialtyRepository.findById(1);
+		var specialty3 = specialtyRepository.findById(3);
+		var specialty4 = specialtyRepository.findById(4);
+		if (specialty1.isEmpty() || specialty3.isEmpty() || specialty4.isEmpty()) {
+			// should not happen
+			throw new RuntimeException("Specialty not found");
+		}
 		List<Appointment> listAppointments = new ArrayList<>(
-				List.of(new Appointment(null, "Angel", "Motta", "42685123", 3),
-						new Appointment(null, "Angel", "Motta", "42685123", 1),
-						new Appointment(null, "Angel", "Motta", "42685123", 4))
+				List.of(new Appointment(null, "Angel", "Motta", "42685123", specialty3.get().getId()),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId()),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty4.get().getId()))
 		);
 
-		var app1 = appointmentRepository.save(listAppointments.get(0));
-		var app2 = appointmentRepository.save(listAppointments.get(1));
-		var app3 = appointmentRepository.save(listAppointments.get(2));
+		appointmentRepository.save(listAppointments.get(0));
+		appointmentRepository.save(listAppointments.get(1));
+		appointmentRepository.save(listAppointments.get(2));
 
 		// HTTP GET request with No parameters about page size and soring
 		// API will be using defaults: sort=specialties,asc)
@@ -226,7 +270,12 @@ class CitasapiApplicationTests {
 	@Test
 	void shouldUpdateAnExistingAppointment() {
 		// Pre-conditions
-		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", 1);
+		var specialty1 = specialtyRepository.findById(1);
+		if (specialty1.isEmpty()) {
+			// should not happen
+			throw new RuntimeException("Specialty not found");
+		}
+		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId());
 		var existingAppointment = appointmentRepository.save(theAppointment);
 
 		// Update existing appointment (update speciality from 1 to 5)
@@ -249,11 +298,16 @@ class CitasapiApplicationTests {
 	@Test
 	void shouldNotUpdateExistingAppointmentWithInvalidRequest() {
 		// Pre-conditions
-		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", 1);
+		var specialty1 = specialtyRepository.findById(1);
+		if (specialty1.isEmpty()) {
+			// should not happen
+			throw new RuntimeException("Specialty not found");
+		}
+		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId());
 		var existingAppointment = appointmentRepository.save(theAppointment);
 
-		// Try to update existing appointment (update speciality from 1 to 5)
-		var updatedAppointment = new AppointmentRequestDTO(null, "Motta", "42685123", 5);
+		// Try to update existing appointment (update speciality from 1 to 4)
+		var updatedAppointment = new AppointmentRequestDTO(null, "Motta", "42685123", 4);
 		HttpEntity<AppointmentRequestDTO> requestEntity = new HttpEntity<>(updatedAppointment);
 		ResponseEntity<Void> response = restTemplate
 											.exchange("/api/appointments/" + existingAppointment.getId(),
@@ -266,7 +320,7 @@ class CitasapiApplicationTests {
 	void shouldNotUpdateAnAppointmentDoesNotExist() {
 		// Creation of a new appointment using PUT is now allowed
 		// Try to update an appointment does not exist
-		var updatedAppointment = new AppointmentRequestDTO("Angel", "Motta", "42685123", 5);
+		var updatedAppointment = new AppointmentRequestDTO("Angel", "Motta", "42685123", 4);
 		HttpEntity<AppointmentRequestDTO> requestEntity = new HttpEntity<>(updatedAppointment);
 		ResponseEntity<Void> response = restTemplate
 				.exchange("/api/appointments/1111", HttpMethod.PUT, requestEntity, Void.class);
@@ -277,7 +331,12 @@ class CitasapiApplicationTests {
 	@Test
 	void shouldDeleteExistingAppointment() {
 		// Pre-conditions
-		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", 1);
+		var specialty1 = specialtyRepository.findById(1);
+		if (specialty1.isEmpty()) {
+			// should not happen
+			throw new RuntimeException("Specialty not found");
+		}
+		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId());
 		var existingAppointment = appointmentRepository.save(theAppointment);
 
 		ResponseEntity<Void> response = restTemplate

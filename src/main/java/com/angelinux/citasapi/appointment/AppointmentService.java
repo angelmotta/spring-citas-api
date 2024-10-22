@@ -3,6 +3,9 @@ package com.angelinux.citasapi.appointment;
 import com.angelinux.citasapi.appointment.domain.AppointmentDTO;
 import com.angelinux.citasapi.appointment.domain.AppointmentRequestDTO;
 import com.angelinux.citasapi.appointment.domain.Appointment;
+import com.angelinux.citasapi.common.exception.EntityNotFoundException;
+import com.angelinux.citasapi.specialty.SpecialtyRepository;
+import com.angelinux.citasapi.specialty.domain.Specialty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +21,12 @@ import java.util.stream.StreamSupport;
 public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final AppointmentMapper appointmentMapper;
+    private final SpecialtyRepository specialtyRepository;
 
-    public AppointmentService(AppointmentRepository arp, AppointmentMapper amp) {
+    public AppointmentService(AppointmentRepository arp, AppointmentMapper amp, SpecialtyRepository sr) {
         this.appointmentRepository = arp;
         this.appointmentMapper = amp;
+        this.specialtyRepository = sr;
     }
 
     public Optional<AppointmentDTO> getAppointment(Long idRequestedAppointment) {
@@ -30,7 +35,12 @@ public class AppointmentService {
     }
 
     public AppointmentDTO createAppointment(AppointmentRequestDTO requestNewAppointment) {
+        // Check existence of specialty
+        Specialty specialty = specialtyRepository.findById(requestNewAppointment.specialtyId())
+                .orElseThrow(() -> new EntityNotFoundException("Specialty with id " + requestNewAppointment.specialtyId() + " not found."));
+
         Appointment theNewAppointment = appointmentMapper.toEntity(requestNewAppointment);
+
         Appointment savedAppointment = appointmentRepository.save(theNewAppointment);
 
         return appointmentMapper.toAppointmentDto(savedAppointment);
@@ -55,12 +65,18 @@ public class AppointmentService {
     }
 
     public Optional<AppointmentDTO> updateAppointment(Long idAppointment, AppointmentRequestDTO updateAppointmentRequest) {
+        // Check existence of requested appointment
         var isAnExistingAppointment = appointmentRepository.existsById(idAppointment);
         if (!isAnExistingAppointment) {
             return Optional.empty();
         }
 
+        // Check existence of specialty
+        Specialty specialty = specialtyRepository.findById(updateAppointmentRequest.specialtyId())
+                .orElseThrow(() -> new EntityNotFoundException("Specialty with id " + updateAppointmentRequest.specialtyId() + " not found."));
+
         Appointment updatedAppointment = appointmentMapper.toEntity(updateAppointmentRequest, idAppointment);
+
         var theUpdatedAppointment = appointmentRepository.save(updatedAppointment);
         return Optional.ofNullable(appointmentMapper.toAppointmentDto(theUpdatedAppointment));
     }

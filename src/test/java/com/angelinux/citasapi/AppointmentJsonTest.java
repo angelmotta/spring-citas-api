@@ -77,9 +77,9 @@ class AppointmentJsonTest {
     void appointmentDeserializationTest() throws IOException {
         String inputList = """
                 [
-                  { "id": 1, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 1 },
-                  { "id": 2, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 3 },
-                  { "id": 3, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 4 }
+                  { "id": 1, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 1},
+                  { "id": 2, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 3},
+                  { "id": 3, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 4}
                 ]
                 """;
         assertThat(jsonTesterList.parse(inputList)).isEqualTo(appointments);
