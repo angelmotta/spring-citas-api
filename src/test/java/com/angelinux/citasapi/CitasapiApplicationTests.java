@@ -263,6 +263,10 @@ class CitasapiApplicationTests {
 		JSONArray pageReceived = documentContext.read("$.data[*]");
 		assertThat(pageReceived.size()).isEqualTo(3); // Default size = 10
 
+		// Pagination metadata verification
+		Long totalAppointments = documentContext.read("$.totalItems", Long.class);
+		assertThat(totalAppointments).isEqualTo(3L);
+
 		// Verify correct sorting
 		JSONArray idAppointments = documentContext.read("$.data..id");
 		// Convert JSONArray elements to Long

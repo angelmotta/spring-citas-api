@@ -52,9 +52,9 @@ public class AppointmentService {
         String sortDirection = sortFieldOrder.getDirection().toString();
 
         List<AppointmentDetailsDTO> appointments = appointmentRepository.findAllAppointmentsDetails(sortField, sortDirection, limit, offset);
-        long totalItems = appointmentRepository.count();
+        Long totalItems = appointmentRepository.count();
         int totalPages = (int) Math.ceil((double) totalItems / limit);
-        return new PaginatedResponse<>(appointments, pageable.getPageNumber(), totalPages, totalPages);
+        return new PaginatedResponse<>(appointments, pageable.getPageNumber(), totalPages, totalItems);
     }
 
     public Page<AppointmentDTO> findAll(Pageable pageable) {
