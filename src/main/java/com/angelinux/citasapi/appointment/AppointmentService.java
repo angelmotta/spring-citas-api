@@ -1,8 +1,6 @@
 package com.angelinux.citasapi.appointment;
 
-import com.angelinux.citasapi.appointment.domain.AppointmentDTO;
-import com.angelinux.citasapi.appointment.domain.AppointmentRequestDTO;
-import com.angelinux.citasapi.appointment.domain.Appointment;
+import com.angelinux.citasapi.appointment.domain.*;
 import com.angelinux.citasapi.common.exception.EntityNotFoundException;
 import com.angelinux.citasapi.specialty.SpecialtyRepository;
 import com.angelinux.citasapi.specialty.domain.Specialty;
@@ -46,11 +44,17 @@ public class AppointmentService {
         return appointmentMapper.toAppointmentDto(savedAppointment);
     }
 
-    public List<AppointmentDTO> findAll() {
-        Iterable<Appointment> appointments = appointmentRepository.findAll();
-        return StreamSupport.stream(appointments.spliterator(), false)
-                .map(appointmentMapper::toAppointmentDto)
-                .collect(Collectors.toList());
+    public PaginatedResponse<AppointmentDetailsDTO> findAllAppointmentsWithDetails(Pageable pageable) {
+        int limit = pageable.getPageSize();
+        int offset = pageable.getPageNumber() * limit;
+        Sort.Order sortFieldOrder = pageable.getSort().stream().findFirst().orElse(Sort.Order.by("first_name"));
+        String sortField = sortFieldOrder.getProperty();
+        String sortDirection = sortFieldOrder.getDirection().toString();
+
+        List<AppointmentDetailsDTO> appointments = appointmentRepository.findAllAppointmentsDetails(sortField, sortDirection, limit, offset);
+        long totalItems = appointmentRepository.count();
+        int totalPages = (int) Math.ceil((double) totalItems / limit);
+        return new PaginatedResponse<>(appointments, pageable.getPageNumber(), totalPages, totalPages);
     }
 
     public Page<AppointmentDTO> findAll(Pageable pageable) {
