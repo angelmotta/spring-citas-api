@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 public class AppointmentService {
@@ -44,14 +42,14 @@ public class AppointmentService {
         return appointmentMapper.toAppointmentDto(savedAppointment);
     }
 
-    public PaginatedResponse<AppointmentDetailsDTO> findAllAppointmentsWithDetails(Pageable pageable) {
+    public PaginatedResponse<AppointmentDTO> findAllAppointmentsWithDetails(Pageable pageable) {
         int limit = pageable.getPageSize();
         int offset = pageable.getPageNumber() * limit;
         Sort.Order sortFieldOrder = pageable.getSort().stream().findFirst().orElse(Sort.Order.by("first_name"));
         String sortField = sortFieldOrder.getProperty();
         String sortDirection = sortFieldOrder.getDirection().toString();
 
-        List<AppointmentDetailsDTO> appointments = appointmentRepository.findAllAppointmentsDetails(sortField, sortDirection, limit, offset);
+        List<AppointmentDTO> appointments = appointmentRepository.findAllAppointmentsDetails(sortField, sortDirection, limit, offset);
         Long totalItems = appointmentRepository.count();
         int totalPages = (int) Math.ceil((double) totalItems / limit);
         return new PaginatedResponse<>(appointments, pageable.getPageNumber(), totalPages, totalItems);
