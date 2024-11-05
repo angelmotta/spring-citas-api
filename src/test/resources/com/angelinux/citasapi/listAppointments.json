@@ -4,20 +4,23 @@
     "firstName": "Angel",
     "lastName": "Motta",
     "dni": "42685123",
-    "specialtyId": 1
+    "specialtyId": 1,
+    "createdAt": "2024-11-03T01:47:01.291402Z"
   },
   {
     "id": 2,
     "firstName": "Angel",
     "lastName": "Motta",
     "dni": "42685123",
-    "specialtyId": 3
+    "specialtyId": 3,
+    "createdAt": "2024-11-03T01:48:01.291402Z"
   },
   {
     "id": 3,
     "firstName": "Angel",
     "lastName": "Motta",
     "dni": "42685123",
-    "specialtyId": 4
+    "specialtyId": 4,
+    "createdAt": "2024-11-03T01:49:01.291402Z"
   }
 ]

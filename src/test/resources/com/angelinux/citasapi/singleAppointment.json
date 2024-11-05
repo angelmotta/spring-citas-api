@@ -3,5 +3,6 @@
   "firstName": "Angel",
   "lastName": "Motta",
   "dni": "42685123",
-  "specialtyId": 1
+  "specialtyId": 1,
+  "createdAt": "2024-11-03T01:47:01.291402Z"
 }

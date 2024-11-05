@@ -31,7 +31,8 @@ public class AppointmentMapper {
                 appointment.getFirstName(),
                 appointment.getLastName(),
                 appointment.getDni(),
-                appointment.getSpecialtyId()
+                appointment.getSpecialtyId(),
+                appointment.getCreatedAt()
         );
     }
 }

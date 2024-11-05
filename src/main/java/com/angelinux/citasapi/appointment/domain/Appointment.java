@@ -1,11 +1,8 @@
 package com.angelinux.citasapi.appointment.domain;
 
-import com.angelinux.citasapi.specialty.domain.Specialty;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
