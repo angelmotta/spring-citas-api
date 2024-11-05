@@ -1,6 +1,7 @@
 package com.angelinux.citasapi;
 
 
+import com.angelinux.citasapi.appointment.domain.AppointmentDetailsDTO;
 import com.angelinux.citasapi.appointment.domain.AppointmentRequestDTO;
 import com.angelinux.citasapi.appointment.domain.AppointmentDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,9 +25,9 @@ class AppointmentJsonTest {
     private JacksonTester<AppointmentRequestDTO> jsonTesterRequest;
 
     @Autowired
-    private JacksonTester<AppointmentDTO[]> jsonTesterList;
+    private JacksonTester<AppointmentDetailsDTO[]> jsonTesterList;
 
-    private AppointmentDTO[] appointments;
+    private AppointmentDetailsDTO[] appointments;
 
     @BeforeEach
     void setUp() {
@@ -34,10 +35,10 @@ class AppointmentJsonTest {
         Instant createdAt1 = Instant.parse("2024-11-03T01:47:01.291402Z");
         Instant createdAt2 = Instant.parse("2024-11-03T01:48:01.291402Z");
         Instant createdAt3 = Instant.parse("2024-11-03T01:49:01.291402Z");
-        appointments = new AppointmentDTO[] {
-                new AppointmentDTO(1L, "Angel", "Motta", "42685123", 1, createdAt1),
-                new AppointmentDTO(2L, "Angel", "Motta", "42685123", 3, createdAt2),
-                new AppointmentDTO(3L, "Angel", "Motta", "42685123", 4, createdAt3)
+        appointments = new AppointmentDetailsDTO[] {
+                new AppointmentDetailsDTO(1L, "Angel", "Motta", "42685123", 1, "General", createdAt1),
+                new AppointmentDetailsDTO(2L, "Angel", "Motta", "42685123", 3, "Pediatría", createdAt2),
+                new AppointmentDetailsDTO(3L, "Angel", "Motta", "42685123", 4, "Psicología", createdAt3)
         };
     }
 
@@ -83,9 +84,9 @@ class AppointmentJsonTest {
     void appointmentDeserializationTest() throws IOException {
         String inputList = """
                 [
-                  { "id": 1, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 1, "createdAt": "2024-11-03T01:47:01.291402Z"},
-                  { "id": 2, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 3, "createdAt": "2024-11-03T01:48:01.291402Z"},
-                  { "id": 3, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 4, "createdAt": "2024-11-03T01:49:01.291402Z"}
+                  { "id": 1, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 1, "specialtyName": "General", "createdAt": "2024-11-03T01:47:01.291402Z"},
+                  { "id": 2, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 3, "specialtyName": "Pediatría", "createdAt": "2024-11-03T01:48:01.291402Z"},
+                  { "id": 3, "firstName": "Angel", "lastName": "Motta", "dni": "42685123", "specialtyId": 4, "specialtyName": "Psicología", "createdAt": "2024-11-03T01:49:01.291402Z"}
                 ]
                 """;
         assertThat(jsonTesterList.parse(inputList)).isEqualTo(appointments);

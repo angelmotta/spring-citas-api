@@ -1,7 +1,7 @@
 package com.angelinux.citasapi.appointment;
 
 import com.angelinux.citasapi.appointment.domain.Appointment;
-import com.angelinux.citasapi.appointment.domain.AppointmentDTO;
+import com.angelinux.citasapi.appointment.domain.AppointmentDetailsDTO;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -16,5 +16,5 @@ public interface AppointmentRepository extends CrudRepository<Appointment, Long>
             "ORDER BY a.id ASC " +
             "LIMIT :limit OFFSET :offset"
     )
-    List<AppointmentDTO> findAllAppointmentsDetails(String sortField, String sortDirection, int limit, int offset);
+    List<AppointmentDetailsDTO> findAllAppointmentsDetails(String sortField, String sortDirection, int limit, int offset);
 }

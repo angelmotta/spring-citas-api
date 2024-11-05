@@ -5,6 +5,7 @@
     "lastName": "Motta",
     "dni": "42685123",
     "specialtyId": 1,
+    "specialtyName": "General",
     "createdAt": "2024-11-03T01:47:01.291402Z"
   },
   {
@@ -13,6 +14,7 @@
     "lastName": "Motta",
     "dni": "42685123",
     "specialtyId": 3,
+    "specialtyName": "Pediatría",
     "createdAt": "2024-11-03T01:48:01.291402Z"
   },
   {
@@ -21,6 +23,7 @@
     "lastName": "Motta",
     "dni": "42685123",
     "specialtyId": 4,
+    "specialtyName": "Psicología",
     "createdAt": "2024-11-03T01:49:01.291402Z"
   }
 ]

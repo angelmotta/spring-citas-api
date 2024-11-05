@@ -1,6 +1,7 @@
 package com.angelinux.citasapi.appointment;
 
 import com.angelinux.citasapi.appointment.domain.AppointmentDTO;
+import com.angelinux.citasapi.appointment.domain.AppointmentDetailsDTO;
 import com.angelinux.citasapi.appointment.domain.AppointmentRequestDTO;
 import com.angelinux.citasapi.appointment.domain.PaginatedResponse;
 import jakarta.validation.Valid;
@@ -36,7 +37,7 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginatedResponse<AppointmentDTO>> findAll(Pageable pageable) {
+    public ResponseEntity<PaginatedResponse<AppointmentDetailsDTO>> findAll(Pageable pageable) {
         var paginatedResponse = appointmentService.findAllAppointmentsWithDetails(pageable);
         return ResponseEntity.ok(paginatedResponse);
     }
