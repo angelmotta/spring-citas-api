@@ -25,8 +25,11 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.net.URI;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,15 +75,21 @@ class CitasapiApplicationTests {
 
 	@Test
 	void shouldReturnAnAppointmentWhenItExists() {
+		// Pre-condition: specialty with id 1 must exist
 		var specialtyResponse = specialtyRepository.findById(1);
 		if (specialtyResponse.isEmpty()) {
 			// should not happen
 			throw new RuntimeException("Specialty not found");
 		}
 		Specialty specialty = specialtyResponse.get();
-		var appointmentSaved = appointmentRepository.save(new Appointment(null, "Angel", "Motta", "42685123", specialty.getId()));
+
+		// Pre-condition: create a new appointment in the database
+		OffsetDateTime appointmentDateTime = OffsetDateTime.parse("2024-12-01T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		Appointment newAppointment = new Appointment(null, "Angel", "Motta", "42685123", specialty.getId(), appointmentDateTime);
+		var appointmentSaved = appointmentRepository.save(newAppointment);
 		Long appointmentId = appointmentSaved.getId();
 
+		// Test and verification the existence of the new appointment making a GET request
 		ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/appointments/" + appointmentId, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -90,6 +99,9 @@ class CitasapiApplicationTests {
 
 		String dni = documentContext.read("$.dni");
 		assertThat(dni).isEqualTo("42685123");
+
+		String appointmentDateTimeReceived = documentContext.read("$.appointmentDateTime");
+		assertThat(appointmentDateTimeReceived).isEqualTo("2024-12-01T15:00:00Z");
 	}
 
 
@@ -104,7 +116,8 @@ class CitasapiApplicationTests {
 	@Test
 	void shouldCreateANewAppointment() {
 		// Make a POST request to create a new resource
-		AppointmentRequestDTO newAppointmentRequest = new AppointmentRequestDTO("Angel", "Motta", "42685123", 2);
+		OffsetDateTime appointmentDateTime = OffsetDateTime.parse("2024-12-01T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		AppointmentRequestDTO newAppointmentRequest = new AppointmentRequestDTO("Angel", "Motta", "42685123", 2, appointmentDateTime);
 		ResponseEntity<Void> createResponseReceived = restTemplate.postForEntity("/api/appointments", newAppointmentRequest, Void.class);
 		assertThat(createResponseReceived.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
@@ -117,15 +130,21 @@ class CitasapiApplicationTests {
 		DocumentContext documentContext = JsonPath.parse(getResponseReceived.getBody());
 		Number id = documentContext.read("$.id");
 		String dni = documentContext.read("$.dni");
+		String appointmentDateTimeReceived = documentContext.read("$.appointmentDateTime");
 
 		assertThat(id).isNotNull();
+
+		assertThat(dni).isNotNull();
 		assertThat(dni).isEqualTo("42685123");
+
+		assertThat(appointmentDateTimeReceived).isNotNull();
+		assertThat(appointmentDateTimeReceived).isEqualTo("2024-12-01T15:00:00Z");
 	}
 
 	@Test
 	void shouldNotCreateANewAppointmentWithInvalidRequest() {
-		// Make a POST request using an invalid request body
-		AppointmentRequestDTO newAppointmentRequest = new AppointmentRequestDTO(null, "Motta", "42685123", 2);
+		// Make a POST request using an invalid request body which is missing firstName and appointmentDateTime
+		AppointmentRequestDTO newAppointmentRequest = new AppointmentRequestDTO (null, "Motta", "42685123", 2, null);
 		ResponseEntity<Void> createResponseReceived = restTemplate.postForEntity("/api/appointments", newAppointmentRequest, Void.class);
 		assertThat(createResponseReceived.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
@@ -141,17 +160,20 @@ class CitasapiApplicationTests {
 			// should not happen
 			throw new RuntimeException("Specialty not found");
 		}
+		OffsetDateTime appointmentDateTime1 = OffsetDateTime.parse("2024-12-01T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		OffsetDateTime appointmentDateTime2 = OffsetDateTime.parse("2024-12-02T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		OffsetDateTime appointmentDateTime3 = OffsetDateTime.parse("2024-12-03T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
 		List<Appointment> listAppointments = new ArrayList<>(
-				List.of(new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId()),
-						new Appointment(null, "Angel", "Motta", "42685123", specialty3.get().getId()),
-						new Appointment(null, "Angel", "Motta", "42685123", specialty2.get().getId()))
+				List.of(new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId(), appointmentDateTime1),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty3.get().getId(), appointmentDateTime2),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty2.get().getId(), appointmentDateTime3))
 		);
 
 		appointmentRepository.save(listAppointments.get(0));
 		appointmentRepository.save(listAppointments.get(1));
 		appointmentRepository.save(listAppointments.get(2));
 
-		// Verify HTTP GET: this should receive a List<Appointment>
+		// TEST endpoint which should send a List<Appointment> to the client (GET)
 		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -170,26 +192,32 @@ class CitasapiApplicationTests {
 	void shouldReturnPageOfAppointments() {
 		// Seed data for database
 		// Get Specialties
-		var specialty1 = specialtyRepository.findById(1);
-		var specialty3 = specialtyRepository.findById(3);
-		var specialty4 = specialtyRepository.findById(4);
+		Optional<Specialty> specialty1 = specialtyRepository.findById(1);
+		Optional<Specialty> specialty3 = specialtyRepository.findById(3);
+		Optional<Specialty> specialty4 = specialtyRepository.findById(4);
 		if (specialty1.isEmpty() || specialty3.isEmpty() || specialty4.isEmpty()) {
 			// should not happen
 			throw new RuntimeException("Specialty not found");
 		}
+		OffsetDateTime appointmentDateTime1 = OffsetDateTime.parse("2024-12-01T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		OffsetDateTime appointmentDateTime2 = OffsetDateTime.parse("2024-12-02T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		OffsetDateTime appointmentDateTime3 = OffsetDateTime.parse("2024-12-03T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
 
 		List<Appointment> listAppointments = new ArrayList<>(
-				List.of(new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId()),
-						new Appointment(null, "Angel", "Motta", "42685123", specialty3.get().getId()),
-						new Appointment(null, "Angel", "Motta", "42685123", specialty4.get().getId()))
+				List.of(new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId(), appointmentDateTime1),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty3.get().getId(), appointmentDateTime2),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty4.get().getId(), appointmentDateTime3))
 		);
 
 		appointmentRepository.save(listAppointments.get(0));
 		appointmentRepository.save(listAppointments.get(1));
 		appointmentRepository.save(listAppointments.get(2));
 
-		// HTTP GET request to receive a Page of Appointments (idx, size)
-		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments?page=0&size=1", String.class);
+		// GET request should receive a Page of Appointments (idx, size)
+		final int PAGE = 0;
+		final int SIZE = 1;
+		String urlRequest = String.format("/api/appointments?page=%d&size=%d", PAGE, SIZE);
+		ResponseEntity<String> response = restTemplate.getForEntity(urlRequest, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -244,18 +272,21 @@ class CitasapiApplicationTests {
 			// should not happen
 			throw new RuntimeException("Specialty not found");
 		}
+		OffsetDateTime appointmentDateTime1 = OffsetDateTime.parse("2024-12-01T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		OffsetDateTime appointmentDateTime2 = OffsetDateTime.parse("2024-12-02T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		OffsetDateTime appointmentDateTime3 = OffsetDateTime.parse("2024-12-03T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
 		List<Appointment> listAppointments = new ArrayList<>(
-				List.of(new Appointment(null, "Angel", "Motta", "42685123", specialty3.get().getId()),
-						new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId()),
-						new Appointment(null, "Angel", "Motta", "42685123", specialty4.get().getId()))
+				List.of(new Appointment(null, "Angel", "Motta", "42685123", specialty3.get().getId(), appointmentDateTime1),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId(), appointmentDateTime2),
+						new Appointment(null, "Angel", "Motta", "42685123", specialty4.get().getId(), appointmentDateTime3))
 		);
 
 		var app1 = appointmentRepository.save(listAppointments.get(0));
 		var app2 = appointmentRepository.save(listAppointments.get(1));
 		var app3 = appointmentRepository.save(listAppointments.get(2));
 
-		// HTTP GET request with No parameters about page size and soring
-		// API will be using defaults: sort=specialties,asc)
+		// HTTP GET request with No parameters (no page, size or sorting)
+		// API will be using sort=appointmentId,ASC by default
 		ResponseEntity<String> response = restTemplate.getForEntity("/api/appointments", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -267,7 +298,7 @@ class CitasapiApplicationTests {
 		Long totalAppointments = documentContext.read("$.totalItems", Long.class);
 		assertThat(totalAppointments).isEqualTo(3L);
 
-		// Verify correct sorting
+		// Verify correct sorting by appointmentId
 		JSONArray idAppointments = documentContext.read("$.data..id");
 		// Convert JSONArray elements to Long
 		List<Long> actualAppointmentsId = new ArrayList<>();
@@ -286,24 +317,33 @@ class CitasapiApplicationTests {
 			// should not happen
 			throw new RuntimeException("Specialty not found");
 		}
-		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId());
+		OffsetDateTime appointmentDateTime1 = OffsetDateTime.parse("2024-12-01T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId(), appointmentDateTime1);
 		var existingAppointment = appointmentRepository.save(theAppointment);
 
-		// Update existing appointment (update speciality from 1 to 5)
-		var updatedAppointment = new AppointmentRequestDTO("Angel", "Motta", "42685123", 4);
+		// Updated data for existing appointment: update speciality from 1 to 5 and change date
+		OffsetDateTime updatedDateTime = OffsetDateTime.parse("2024-12-17T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		var updatedAppointment = new AppointmentRequestDTO("Angel", "Motta", "42685123", 4, updatedDateTime);
+		// PUT request to update the appointment
 		HttpEntity<AppointmentRequestDTO> requestEntity = new HttpEntity<>(updatedAppointment);
 		ResponseEntity<Void> response = restTemplate
 											.exchange("/api/appointments/" + existingAppointment.getId(), HttpMethod.PUT, requestEntity, Void.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
-		// Verify reading your update
+		// Verify update operation by making a GET request
 		ResponseEntity<String> getResponse = restTemplate
 												.getForEntity("/api/appointments/" + existingAppointment.getId(), String.class);
 
 		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 		DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+
+		// verify specialtyId is updated
 		Number specialtyId = documentContext.read("$.specialtyId");
 		assertThat(specialtyId).isEqualTo(4);
+
+		// verify appointmentDateTime is updated
+		String appointmentDateTimeReceived = documentContext.read("$.appointmentDateTime");
+		assertThat(appointmentDateTimeReceived).isEqualTo("2024-12-17T15:00:00Z");
 	}
 
 	@Test
@@ -314,11 +354,12 @@ class CitasapiApplicationTests {
 			// should not happen
 			throw new RuntimeException("Specialty not found");
 		}
-		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId());
+		OffsetDateTime appointmentDateTime1 = OffsetDateTime.parse("2024-12-01T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId(), appointmentDateTime1);
 		var existingAppointment = appointmentRepository.save(theAppointment);
 
 		// Try to update existing appointment (update speciality from 1 to 4)
-		var updatedAppointment = new AppointmentRequestDTO(null, "Motta", "42685123", 4);
+		var updatedAppointment = new AppointmentRequestDTO(null, "Motta", "42685123", 4, null);
 		HttpEntity<AppointmentRequestDTO> requestEntity = new HttpEntity<>(updatedAppointment);
 		ResponseEntity<Void> response = restTemplate
 											.exchange("/api/appointments/" + existingAppointment.getId(),
@@ -331,7 +372,8 @@ class CitasapiApplicationTests {
 	void shouldNotUpdateAnAppointmentDoesNotExist() {
 		// Creation of a new appointment using PUT is now allowed
 		// Try to update an appointment does not exist
-		var updatedAppointment = new AppointmentRequestDTO("Angel", "Motta", "42685123", 4);
+		OffsetDateTime appointmentDateTime1 = OffsetDateTime.parse("2024-12-01T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		var updatedAppointment = new AppointmentRequestDTO("Angel", "Motta", "42685123", 4, appointmentDateTime1);
 		HttpEntity<AppointmentRequestDTO> requestEntity = new HttpEntity<>(updatedAppointment);
 		ResponseEntity<Void> response = restTemplate
 				.exchange("/api/appointments/1111", HttpMethod.PUT, requestEntity, Void.class);
@@ -347,7 +389,8 @@ class CitasapiApplicationTests {
 			// should not happen
 			throw new RuntimeException("Specialty not found");
 		}
-		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId());
+		OffsetDateTime appointmentDateTime1 = OffsetDateTime.parse("2024-12-01T10:00:00-05:00").withOffsetSameInstant(ZoneOffset.UTC);
+		var theAppointment = new Appointment(null, "Angel", "Motta", "42685123", specialty1.get().getId(), appointmentDateTime1);
 		var existingAppointment = appointmentRepository.save(theAppointment);
 
 		ResponseEntity<Void> response = restTemplate

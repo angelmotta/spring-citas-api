@@ -4,5 +4,6 @@
   "lastName": "Motta",
   "dni": "42685123",
   "specialtyId": 1,
+  "appointmentDateTime": "2024-12-01T15:00:00Z",
   "createdAt": "2024-11-03T01:47:01.291402Z"
 }

@@ -45,11 +45,11 @@ public class AppointmentService {
     public PaginatedResponse<AppointmentDetailsDTO> findAllAppointmentsWithDetails(Pageable pageable) {
         int limit = pageable.getPageSize();
         int offset = pageable.getPageNumber() * limit;
-        Sort.Order sortFieldOrder = pageable.getSort().stream().findFirst().orElse(Sort.Order.by("first_name"));
-        String sortField = sortFieldOrder.getProperty();
-        String sortDirection = sortFieldOrder.getDirection().toString();
+        // Sort.Order sortFieldParam = pageable.getSort().stream().findFirst().orElse(Sort.Order.by("first_name"));
+        // String sortField = sortFieldParam.getProperty();
+        // String sortDirection = sortFieldParam.getDirection().toString();
 
-        List<AppointmentDetailsDTO> appointments = appointmentRepository.findAllAppointmentsDetails(sortField, sortDirection, limit, offset);
+        List<AppointmentDetailsDTO> appointments = appointmentRepository.findAllAppointmentsDetails(limit, offset);
         Long totalItems = appointmentRepository.count();
         int totalPages = (int) Math.ceil((double) totalItems / limit);
         return new PaginatedResponse<>(appointments, pageable.getPageNumber(), totalPages, totalItems);

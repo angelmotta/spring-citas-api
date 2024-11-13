@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+import java.time.OffsetDateTime;
+
 public record AppointmentRequestDTO(
         @NotBlank(message = "First name is required")
         String firstName,
@@ -16,5 +18,9 @@ public record AppointmentRequestDTO(
         String dni,
 
         @NotNull(message = "Specialty ID is required")
-        Integer specialtyId)
+        Integer specialtyId,
+
+        @NotNull(message = "Appointment date and time is required")
+        OffsetDateTime appointmentDateTime
+        )
 { }

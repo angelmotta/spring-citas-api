@@ -21,6 +21,7 @@ public class AppointmentMapper {
         theNewAppointment.setLastName(requestNewAppointment.lastName());
         theNewAppointment.setDni(requestNewAppointment.dni());
         theNewAppointment.setSpecialtyId(requestNewAppointment.specialtyId());
+        theNewAppointment.setDateTime(requestNewAppointment.appointmentDateTime());
 
         return theNewAppointment;
     }
@@ -32,6 +33,7 @@ public class AppointmentMapper {
                 appointment.getLastName(),
                 appointment.getDni(),
                 appointment.getSpecialtyId(),
+                appointment.getDateTime(),
                 appointment.getCreatedAt()
         );
     }

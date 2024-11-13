@@ -6,6 +6,8 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 @Table("appointments")
 public class Appointment {
@@ -21,18 +23,22 @@ public class Appointment {
     @Column("specialty_id")
     private Integer specialtyId;
 
+    @Column("appointment_datetime")
+    private OffsetDateTime dateTime;
+
     @CreatedDate
     private Instant createdAt;
 
     public Appointment() {
     }
 
-    public Appointment(Long id, String firstName, String lastName, String dni, Integer specialtyId) {
+    public Appointment(Long id, String firstName, String lastName, String dni, Integer specialtyId, OffsetDateTime dateTime) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.dni = dni;
         this.specialtyId = specialtyId;
+        this.dateTime = dateTime;
     }
 
     public Long getId() {
@@ -73,6 +79,14 @@ public class Appointment {
 
     public void setSpecialtyId(Integer specialtyId) {
         this.specialtyId = specialtyId;
+    }
+
+    public OffsetDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(OffsetDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     public Instant getCreatedAt() {

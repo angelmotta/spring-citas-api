@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS appointments (
     last_name VARCHAR(255) NOT NULL,
     dni VARCHAR(50) NOT NULL,
     specialty_id INTEGER NOT NULL,
+    appointment_datetime TIMESTAMP WITH TIME ZONE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE,
     PRIMARY KEY(id),
     CONSTRAINT fk_specialty
